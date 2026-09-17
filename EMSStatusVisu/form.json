@@ -1,0 +1,26 @@
+{
+    "elements": [
+        {
+            "type": "Label",
+            "caption": "Sulzbann EMS Status Visualisierung"
+        },
+        {
+            "type": "Label",
+            "caption": "Read-only Statuskachel für EMS, PV-Prognose, Netz und Batterie."
+        }
+    ],
+    "actions": [
+        {
+            "type": "Button",
+            "caption": "Visualisierung aktualisieren",
+            "onClick": "SBEMSV_Update($id);"
+        }
+    ],
+    "status": [
+        {
+            "code": 102,
+            "icon": "active",
+            "caption": "Aktiv"
+        }
+    ]
+}
