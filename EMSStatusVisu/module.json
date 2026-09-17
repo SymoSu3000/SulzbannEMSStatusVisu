@@ -1,0 +1,13 @@
+{
+    "id": "{C960A49D-2A7D-4D4A-A962-020E53425166}",
+    "name": "Sulzbann EMS Status Visu",
+    "type": 3,
+    "vendor": "Sulzbann",
+    "aliases": [
+        "Sulzbann EMS Status Visu"
+    ],
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "SBEMSV"
+}
