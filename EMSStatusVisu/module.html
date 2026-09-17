@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            color-scheme: light dark;
+            --ems-text: var(--content-color, #20242a);
+            --ems-muted: color-mix(in srgb, var(--ems-text) 62%, transparent);
+            --ems-line: color-mix(in srgb, var(--ems-text) 14%, transparent);
+            --ems-panel: color-mix(in srgb, var(--ems-text) 7%, transparent);
+            --ems-panel-strong: color-mix(in srgb, var(--ems-text) 10%, transparent);
+            --ems-purple: #a855f7;
+            --ems-yellow: #f4b400;
+            --ems-blue: #31a8e0;
+            --ems-green: #18b88a;
+            --ems-orange: #ff7a45;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background: transparent;
+            color: var(--ems-text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+        }
+
+        .view-shell {
+            width: 100%;
+            height: 100%;
+            padding: 54px 10px 10px;
+            display: grid;
+            grid-template-rows: minmax(118px, 1fr) 40px minmax(136px, 1fr);
+            min-height: 0;
+        }
+
+        .top-grid,
+        .bottom-grid {
+            display: grid;
+            min-height: 0;
+        }
+
+        .top-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .bottom-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .panel,
+        .metric,
+        .strategy {
+            min-width: 0;
+            border-color: var(--ems-line);
+        }
+
+        .panel {
+            display: grid;
+            grid-template-columns: 34px minmax(0, 1fr);
+            align-content: center;
+            gap: 10px;
+            padding: 14px 18px;
+            background: var(--ems-panel);
+        }
+
+        .panel:first-child {
+            border-right: 1px solid var(--ems-line);
+        }
+
+        .strategy {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-top: 1px solid var(--ems-line);
+            border-bottom: 1px solid var(--ems-line);
+            background: var(--ems-panel-strong);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .bottom-grid {
+            background: var(--ems-panel);
+        }
+
+        .metric {
+            display: grid;
+            grid-template-columns: 28px minmax(0, 1fr);
+            align-content: center;
+            gap: 8px;
+            padding: 12px 14px;
+            border-right: 1px solid var(--ems-line);
+        }
+
+        .metric:last-child {
+            border-right: 0;
+        }
+
+        .icon {
+            align-self: center;
+            justify-self: center;
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        .icon.target { color: var(--ems-purple); }
+        .icon.forecast { color: var(--ems-yellow); }
+        .icon.pv { color: var(--ems-yellow); }
+        .icon.grid { color: var(--ems-blue); }
+        .icon.soc { color: var(--ems-green); }
+        .icon.limit { color: var(--ems-orange); }
+
+        .copy {
+            min-width: 0;
+        }
+
+        .label {
+            margin-bottom: 3px;
+            color: var(--ems-muted);
+            font-size: 13px;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .value {
+            font-size: 18px;
+            font-weight: 750;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .subvalue {
+            margin-top: 4px;
+            color: var(--ems-muted);
+            font-size: 13px;
+            line-height: 1.25;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .metric .value {
+            font-size: 18px;
+        }
+
+        @media (max-width: 540px) {
+            .view-shell {
+                padding: 54px 6px 6px;
+                grid-template-rows: minmax(110px, 1fr) 36px minmax(130px, 1fr);
+            }
+
+            .panel {
+                grid-template-columns: 26px minmax(0, 1fr);
+                gap: 7px;
+                padding: 10px 8px;
+            }
+
+            .metric {
+                grid-template-columns: 24px minmax(0, 1fr);
+                gap: 5px;
+                padding: 9px 7px;
+            }
+
+            .label,
+            .subvalue {
+                font-size: 12px;
+            }
+
+            .value,
+            .metric .value {
+                font-size: 16px;
+            }
+
+            .strategy {
+                font-size: 13px;
+            }
+
+            .icon {
+                font-size: 19px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="view-shell">
+        <section class="top-grid">
+            <article class="panel">
+                <div class="icon target" aria-hidden="true">◉</div>
+                <div class="copy">
+                    <div class="label">Nächstes Ziel</div>
+                    <div class="value" id="target">—</div>
+                    <div class="subvalue" id="targetSub">—</div>
+                </div>
+            </article>
+
+            <article class="panel">
+                <div class="icon forecast" aria-hidden="true">▥</div>
+                <div class="copy">
+                    <div class="label">PV-Prognose</div>
+                    <div class="value" id="forecast">—</div>
+                    <div class="subvalue" id="forecastSub">—</div>
+                </div>
+            </article>
+        </section>
+
+        <div class="strategy">
+            <span aria-hidden="true">☀️</span>
+            <span id="strategy">—</span>
+        </div>
+
+        <section class="bottom-grid">
+            <article class="metric">
+                <div class="icon pv" aria-hidden="true">☀</div>
+                <div class="copy">
+                    <div class="label">PV</div>
+                    <div class="value" id="pv">—</div>
+                </div>
+            </article>
+
+            <article class="metric">
+                <div class="icon grid" aria-hidden="true">↔</div>
+                <div class="copy">
+                    <div class="label">Netz</div>
+                    <div class="value" id="grid">—</div>
+                </div>
+            </article>
+
+            <article class="metric">
+                <div class="icon soc" aria-hidden="true">▣</div>
+                <div class="copy">
+                    <div class="label">SOC</div>
+                    <div class="value" id="soc">—</div>
+                </div>
+            </article>
+
+            <article class="metric">
+                <div class="icon limit" aria-hidden="true">ϟ</div>
+                <div class="copy">
+                    <div class="label">Gesamtlimit</div>
+                    <div class="value" id="limit">—</div>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <script>
+        "use strict";
+
+        const INITIAL_DATA = __SBEMSV_INITIAL_DATA__;
+        let currentData = isObject(INITIAL_DATA) ? cloneValue(INITIAL_DATA) : {};
+        let refreshAttempts = 0;
+        let refreshTimer = null;
+
+        function isObject(value) {
+            return value !== null && typeof value === "object" && !Array.isArray(value);
+        }
+
+        function cloneValue(value) {
+            if (Array.isArray(value)) {
+                return value.map(cloneValue);
+            }
+
+            if (!isObject(value)) {
+                return value;
+            }
+
+            const result = {};
+            Object.keys(value).forEach(key => {
+                result[key] = cloneValue(value[key]);
+            });
+            return result;
+        }
+
+        function mergeData(base, incoming) {
+            const result = isObject(base) ? cloneValue(base) : {};
+
+            if (!isObject(incoming)) {
+                return result;
+            }
+
+            Object.keys(incoming).forEach(key => {
+                const next = incoming[key];
+
+                if (isObject(next)) {
+                    result[key] = mergeData(isObject(result[key]) ? result[key] : {}, next);
+                    return;
+                }
+
+                if (next === null || typeof next === "undefined") {
+                    if (!(key in result)) {
+                        result[key] = next;
+                    }
+                    return;
+                }
+
+                result[key] = next;
+            });
+
+            return result;
+        }
+
+        function isExpectedPayload(data) {
+            if (!isObject(data)) {
+                return false;
+            }
+
+            return [
+                "strategy", "status", "target", "socNeed", "forecastEnergy",
+                "forecastPeak", "forecastDuration", "pv", "grid", "soc", "limit"
+            ].some(key => Object.prototype.hasOwnProperty.call(data, key));
+        }
+
+        function hasCoreData() {
+            return typeof currentData.strategy === "string"
+                || typeof currentData.target === "string"
+                || Number.isFinite(Number(currentData.pv));
+        }
+
+        function numeric(value, decimals) {
+            if (value === null || typeof value === "undefined" || value === "") {
+                return null;
+            }
+
+            const number = Number(value);
+            return Number.isFinite(number) ? number.toFixed(decimals) : null;
+        }
+
+        function power(value) {
+            const number = numeric(value, 1);
+            return number === null ? "—" : number + " kW";
+        }
+
+        function energy(value) {
+            const number = numeric(value, 1);
+            return number === null ? "—" : number + " kWh";
+        }
+
+        function percent(value) {
+            const number = numeric(value, 0);
+            return number === null ? "—" : number + " %";
+        }
+
+        function setText(id, value) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+            }
+        }
+
+        function applyData() {
+            setText("strategy", currentData.strategy || "—");
+            setText("target", currentData.target || "—");
+
+            const need = power(currentData.socNeed);
+            setText("targetSub", need === "—" ? "—" : "SOC-Ladebedarf " + need);
+
+            setText("forecast", energy(currentData.forecastEnergy));
+
+            const forecastDetails = [];
+            const peak = power(currentData.forecastPeak);
+            if (peak !== "—") {
+                forecastDetails.push("Peak " + peak);
+            }
+
+            const duration = numeric(currentData.forecastDuration, 1);
+            if (duration !== null) {
+                forecastDetails.push("Dauer " + duration + " h");
+            }
+
+            setText("forecastSub", forecastDetails.length ? forecastDetails.join(" · ") : "—");
+            setText("pv", power(currentData.pv));
+            setText("grid", power(currentData.grid));
+            setText("soc", percent(currentData.soc));
+            setText("limit", power(currentData.limit));
+        }
+
+        function requestRefresh(force) {
+            if (typeof requestAction !== "function") {
+                return;
+            }
+
+            if (!force && hasCoreData()) {
+                return;
+            }
+
+            requestAction("Refresh", true);
+        }
+
+        function scheduleRefreshRetry() {
+            if (refreshTimer !== null) {
+                clearTimeout(refreshTimer);
+            }
+
+            if (hasCoreData() || refreshAttempts >= 2) {
+                refreshTimer = null;
+                return;
+            }
+
+            const delays = [500, 1500];
+            const delay = delays[refreshAttempts] || 1500;
+            refreshAttempts += 1;
+
+            refreshTimer = setTimeout(() => {
+                if (!hasCoreData()) {
+                    requestRefresh(true);
+                    scheduleRefreshRetry();
+                }
+            }, delay);
+        }
+
+        function handleMessage(data) {
+            if (typeof data === "string") {
+                try {
+                    data = JSON.parse(data);
+                } catch (error) {
+                    return;
+                }
+            }
+
+            if (!isExpectedPayload(data)) {
+                return;
+            }
+
+            currentData = mergeData(currentData, data);
+            applyData();
+
+            if (hasCoreData()) {
+                refreshAttempts = 0;
+                if (refreshTimer !== null) {
+                    clearTimeout(refreshTimer);
+                    refreshTimer = null;
+                }
+            }
+        }
+
+        window.addEventListener("load", () => {
+            applyData();
+            requestRefresh(false);
+            scheduleRefreshRetry();
+        });
+    </script>
+</body>
+</html>
