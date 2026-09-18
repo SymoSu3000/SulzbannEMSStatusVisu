@@ -6,16 +6,33 @@
     <style>
         :root {
             color-scheme: light dark;
-            --ems-text: var(--content-color, #20242a);
-            --ems-muted: color-mix(in srgb, var(--ems-text) 62%, transparent);
-            --ems-line: color-mix(in srgb, var(--ems-text) 14%, transparent);
-            --ems-panel: color-mix(in srgb, var(--ems-text) 7%, transparent);
-            --ems-panel-strong: color-mix(in srgb, var(--ems-text) 10%, transparent);
+            --ems-background: #ffffff;
+            --ems-text: #111111;
+            --ems-muted: #55585d;
+            --ems-line: #d8dade;
+            --ems-panel: transparent;
+            --ems-panel-strong: #f5f6f7;
             --ems-purple: #a855f7;
             --ems-yellow: #f4b400;
             --ems-blue: #31a8e0;
             --ems-green: #18b88a;
             --ems-orange: #ff7a45;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --ems-background: transparent;
+                --ems-text: var(--content-color, #f3f5f7);
+                --ems-muted: rgba(235, 240, 244, 0.66);
+                --ems-line: rgba(225, 240, 246, 0.18);
+                --ems-panel: rgba(255, 255, 255, 0.055);
+                --ems-panel-strong: rgba(255, 255, 255, 0.085);
+                --ems-purple: #b967ff;
+                --ems-yellow: #ffc21a;
+                --ems-blue: #43b8ef;
+                --ems-green: #25d3a1;
+                --ems-orange: #ff9468;
+            }
         }
 
         * {
@@ -28,7 +45,7 @@
             height: 100%;
             margin: 0;
             overflow: hidden;
-            background: transparent;
+            background: var(--ems-background);
             color: var(--ems-text);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
         }
@@ -108,8 +125,20 @@
         .icon {
             align-self: center;
             justify-self: center;
-            font-size: 22px;
+            width: 32px;
+            height: 32px;
             line-height: 1;
+        }
+
+        .icon svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         .icon.target { color: var(--ems-purple); }
@@ -158,20 +187,20 @@
 
         @media (max-width: 540px) {
             .view-shell {
-                padding: 54px 6px 6px;
-                grid-template-rows: minmax(110px, 1fr) 36px minmax(130px, 1fr);
+                padding: 50px 6px 5px;
+                grid-template-rows: minmax(0, 1fr) 32px minmax(0, 0.78fr);
             }
 
             .panel {
-                grid-template-columns: 26px minmax(0, 1fr);
-                gap: 7px;
-                padding: 10px 8px;
+                grid-template-columns: 30px minmax(0, 1fr);
+                gap: 6px;
+                padding: 6px 8px;
             }
 
             .metric {
-                grid-template-columns: 24px minmax(0, 1fr);
-                gap: 5px;
-                padding: 9px 7px;
+                grid-template-columns: 26px minmax(0, 1fr);
+                gap: 4px;
+                padding: 5px 6px;
             }
 
             .label,
@@ -189,7 +218,8 @@
             }
 
             .icon {
-                font-size: 19px;
+                width: 28px;
+                height: 28px;
             }
         }
     </style>
@@ -198,7 +228,12 @@
     <main class="view-shell">
         <section class="top-grid">
             <article class="panel">
-                <div class="icon target" aria-hidden="true">◉</div>
+                <div class="icon target" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="7"></circle>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </div>
                 <div class="copy">
                     <div class="label">Nächstes Ziel</div>
                     <div class="value" id="target">—</div>
@@ -207,7 +242,11 @@
             </article>
 
             <article class="panel">
-                <div class="icon forecast" aria-hidden="true">▥</div>
+                <div class="icon forecast" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M5 4v16M9 4v16M13 4v16M17 4v16M5 4h14v16H5z"></path>
+                    </svg>
+                </div>
                 <div class="copy">
                     <div class="label">PV-Prognose</div>
                     <div class="value" id="forecast">—</div>
@@ -217,13 +256,23 @@
         </section>
 
         <div class="strategy">
-            <span aria-hidden="true">☀️</span>
+            <span class="icon forecast" aria-hidden="true" style="width:22px;height:22px">
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+                </svg>
+            </span>
             <span id="strategy">—</span>
         </div>
 
         <section class="bottom-grid">
             <article class="metric">
-                <div class="icon pv" aria-hidden="true">☀</div>
+                <div class="icon pv" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+                    </svg>
+                </div>
                 <div class="copy">
                     <div class="label">PV</div>
                     <div class="value" id="pv">—</div>
@@ -231,7 +280,11 @@
             </article>
 
             <article class="metric">
-                <div class="icon grid" aria-hidden="true">↔</div>
+                <div class="icon grid" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 9h16M4 9l3-3M4 9l3 3M20 15H4M20 15l-3-3M20 15l-3 3"></path>
+                    </svg>
+                </div>
                 <div class="copy">
                     <div class="label">Netz</div>
                     <div class="value" id="grid">—</div>
@@ -239,7 +292,12 @@
             </article>
 
             <article class="metric">
-                <div class="icon soc" aria-hidden="true">▣</div>
+                <div class="icon soc" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="5" y="4" width="13" height="16" rx="1"></rect>
+                        <path d="M18 9h2v6h-2M9 8h5v8H9z"></path>
+                    </svg>
+                </div>
                 <div class="copy">
                     <div class="label">SOC</div>
                     <div class="value" id="soc">—</div>
@@ -247,7 +305,13 @@
             </article>
 
             <article class="metric">
-                <div class="icon limit" aria-hidden="true">ϟ</div>
+                <div class="icon limit" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 17a8 8 0 0 1 16 0"></path>
+                        <path d="M12 17l4-6"></path>
+                        <circle cx="12" cy="17" r="1.3"></circle>
+                    </svg>
+                </div>
                 <div class="copy">
                     <div class="label">Gesamtlimit</div>
                     <div class="value" id="limit">—</div>
